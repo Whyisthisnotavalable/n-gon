@@ -1,3 +1,3 @@
-2-d physics rogue-lite platformer shooter
+2-d physics rogue-lite platformer shooter ~ written by lilgreenland
 
-https://landgreen.github.io/sidescroller/
+https://whyisthisnotavalable.github.io/n-gon/
