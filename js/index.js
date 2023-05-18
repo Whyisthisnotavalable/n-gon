@@ -1142,8 +1142,8 @@ if (localSettings) {
         localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
     }
 
-    simulation.isCommunityMaps = localSettings.isCommunityMaps
-    document.getElementById("community-maps").checked = localSettings.isCommunityMaps
+    // simulation.isCommunityMaps = localSettings.isCommunityMaps
+    // document.getElementById("community-maps").checked = localSettings.isCommunityMaps
     simulation.difficultyMode = localSettings.difficultyMode
     lore.setTechGoal()
     document.getElementById("difficulty-select").value = localSettings.difficultyMode
@@ -1166,7 +1166,7 @@ if (localSettings) {
     };
     input.setDefault()
     localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
-    document.getElementById("community-maps").checked = localSettings.isCommunityMaps
+    // document.getElementById("community-maps").checked = localSettings.isCommunityMaps
     simulation.isCommunityMaps = localSettings.isCommunityMaps
     document.getElementById("difficulty-select").value = localSettings.difficultyMode
     document.getElementById("fps-select").value = localSettings.fpsCapDefault
@@ -1190,11 +1190,11 @@ document.getElementById("fps-select").addEventListener("input", () => {
     localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
 });
 
-document.getElementById("community-maps").addEventListener("input", () => {
-    simulation.isCommunityMaps = document.getElementById("community-maps").checked
-    localSettings.isCommunityMaps = simulation.isCommunityMaps
-    localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
-});
+// document.getElementById("community-maps").addEventListener("input", () => {
+    // simulation.isCommunityMaps = document.getElementById("community-maps").checked
+    // localSettings.isCommunityMaps = simulation.isCommunityMaps
+    // localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
+// });
 
 // difficulty-select-experiment event listener is set in build.makeGrid
 document.getElementById("difficulty-select").addEventListener("input", () => {
@@ -1206,42 +1206,42 @@ document.getElementById("difficulty-select").addEventListener("input", () => {
 });
 
 
-document.getElementById("updates").addEventListener("toggle", function() {
-    function loadJSON(path, success, error) { //generic function to get JSON
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 200) {
-                    if (success)
-                        success(JSON.parse(xhr.responseText));
-                } else {
-                    if (error)
-                        error(xhr);
-                }
-            }
-        };
-        xhr.open("GET", path, true);
-        xhr.send();
-    }
-    let text = `<strong>n-gon</strong>: <a href="https://github.com/landgreen/n-gon/blob/master/todo.txt">todo list</a> and complete <a href="https://github.com/landgreen/n-gon/commits/master">change-log</a><hr>`
-    document.getElementById("updates-div").innerHTML = text
+// document.getElementById("updates").addEventListener("toggle", function() {
+    // function loadJSON(path, success, error) { //generic function to get JSON
+        // var xhr = new XMLHttpRequest();
+        // xhr.onreadystatechange = function() {
+            // if (xhr.readyState === XMLHttpRequest.DONE) {
+                // if (xhr.status === 200) {
+                    // if (success)
+                        // success(JSON.parse(xhr.responseText));
+                // } else {
+                    // if (error)
+                        // error(xhr);
+                // }
+            // }
+        // };
+        // xhr.open("GET", path, true);
+        // xhr.send();
+    // }
+    // let text = `<strong>n-gon</strong>: <a href="https://github.com/landgreen/n-gon/blob/master/todo.txt">todo list</a> and complete <a href="https://github.com/landgreen/n-gon/commits/master">change-log</a><hr>`
+    // document.getElementById("updates-div").innerHTML = text
 
-    ///  https://api.github.com/repos/landgreen/n-gon/stats/commit_activity
-    loadJSON('https://api.github.com/repos/landgreen/n-gon/commits',
-        function(data) {
-            // console.log(data)
-            for (let i = 0, len = 20; i < len; i++) {
-                text += "<strong>" + data[i].commit.author.date.substr(0, 10) + "</strong> - "; //+ "<br>"
-                text += data[i].commit.message
-                if (i < len - 1) text += "<hr>"
-            }
-            document.getElementById("updates-div").innerHTML = text.replace(/\n/g, "<br />")
-        },
-        function(xhr) {
-            console.error(xhr);
-        }
-    );
-})
+    // ///  https://api.github.com/repos/landgreen/n-gon/stats/commit_activity
+    // loadJSON('https://api.github.com/repos/landgreen/n-gon/commits',
+        // function(data) {
+            // // console.log(data)
+            // for (let i = 0, len = 20; i < len; i++) {
+                // text += "<strong>" + data[i].commit.author.date.substr(0, 10) + "</strong> - "; //+ "<br>"
+                // text += data[i].commit.message
+                // if (i < len - 1) text += "<hr>"
+            // }
+            // document.getElementById("updates-div").innerHTML = text.replace(/\n/g, "<br />")
+        // },
+        // function(xhr) {
+            // console.error(xhr);
+        // }
+    // );
+// })
 const sound = {
     tone(frequency, end = 1000, gain = 0.05) {
         const audioCtx = new(window.AudioContext || window.webkitAudioContext)(); //setup audio context

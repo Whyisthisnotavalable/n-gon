@@ -1200,6 +1200,32 @@ const tech = {
                 tech.isBotSpawnerReset = false;
             }
         },
+		{
+            name: "harpoon-bot",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Robot' class="link">harpoon-bot</a>`,
+            description: "a <strong class='color-bot'>bot</strong> fires <strong>harpoons</strong> at mobs, retracts on fail/success",
+            maxCount: 9,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isBot: true,
+            isBotTech: true,
+            allowed() {
+                return true
+            },
+            requires: "",
+            effect() {
+                tech.harpoonBotCount++;
+                b.harpoonBot();
+            },
+            remove() {
+                if (this.count) {
+                    tech.harpoonBotCount -= this.count;
+                    b.clearPermanentBots();
+                    b.respawnBots();
+                }
+            }
+        },
         {
             name: "nail-bot",
             link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Robot' class="link">nail-bot</a>`,
@@ -1678,7 +1704,9 @@ const tech = {
                 for (let i = 0; i < tech.plasmaBotCount; i++) b.plasmaBot();
                 tech.plasmaBotCount *= 2
                 for (let i = 0; i < tech.missileBotCount; i++) b.missileBot();
-                tech.missileBotCount *= 2
+                tech.missileBotCount *= 2                
+				for (let i = 0; i < tech.harpoonBotCount; i++) b.missileBot();
+                tech.harpoonBotCount *= 2
             },
             remove() {
                 if (this.count) {
@@ -1695,6 +1723,7 @@ const tech = {
                     tech.dynamoBotCount = Math.round(tech.dynamoBotCount / 2)
                     tech.plasmaBotCount = Math.round(tech.plasmaBotCount / 2)
                     tech.missileBotCount = Math.round(tech.missileBotCount / 2)
+                    tech.harpoonBotCount = Math.round(tech.harpoonBotCount / 2)
                     b.clearPermanentBots();
                     b.respawnBots();
                 }
@@ -8592,6 +8621,10 @@ const tech = {
                     () => {
                         b.nailBot();
                         tech.nailBotCount++;
+                    },                    
+					() => {
+                        b.harpoonBot();
+                        tech.harpoonBotCount++;
                     },
                     () => {
                         b.foamBot();
@@ -8850,6 +8883,7 @@ const tech = {
     boomBotCount: null,
     plasmaBotCount: null,
     missileBotCount: null,
+	harpoonBotCount: null,
     orbitBotCount: null,
     collisionImmuneCycles: null,
     blockDmg: null,
