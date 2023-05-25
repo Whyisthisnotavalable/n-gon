@@ -1,6 +1,4 @@
 "use strict";
-//collision groups
-//   cat.player | cat.map | cat.body | cat.bullet | cat.powerUp | cat.mob | cat.mobBullet | cat.mobShield | cat.phased
 const cat = {
     player: 0x1,
     map: 0x10,
@@ -18,7 +16,8 @@ const color = { //light
     block: "rgba(140,140,140,0.85)",
     blockS: "#222",
     map: "#444",
-    bullet: "#000"
+    bullet: "#000",
+	grass: "#00FF00"
 }
 
 // const color = { //dark
@@ -1309,4 +1308,13 @@ function cycle() {
         // }
     }
 }
+function checkIfOnTitlePage() {
+	if(simulation.onTitlePage) {
+		if(Math.random() < 0.1) {
+			simulation.createFloatingPolygons(1, Math.floor(Math.random() * 10) + 2, 15, 100, 1, 20)
+		}
+	}
+	requestAnimationFrame(checkIfOnTitlePage)
+}
+checkIfOnTitlePage()
 // simulation.introPlayer()

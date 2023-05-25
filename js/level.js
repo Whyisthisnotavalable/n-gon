@@ -1,6 +1,5 @@
 let body = []; //non static bodies
 let map = []; //all static bodies
-let grass = [];
 let cons = []; //all constraints between a point and a body
 let consBB = []; //all constraints between two bodies
 let composite = [] //rotors and other map elements that don't fit 
@@ -1040,6 +1039,76 @@ const level = {
             Composite.add(engine.world, cons[cons.length - 1]);
         }
     },
+	water(x, y, width, height) {
+        return {
+            min: {
+                x: x,
+                y: y
+            },
+            max: {
+                x: x + width,
+                y: y + height
+            },
+            width: width,
+            height: height,
+            maxHeight: height,
+            isOn: true,
+            opticalQuery() {
+                if (this.isOn) {
+                    //draw
+                    ctx.fillStyle = `hsla(0, 100%, 50%,${0.6 + 0.4 * Math.random()})`
+                    ctx.fillRect(this.min.x, this.min.y, this.width, this.height)
+                    //collision with player
+                    if (this.height > 0 && Matter.Query.region([player], this).length && !(m.isCloak)) {
+						simulation.drawList.push({ //add dmg to draw queue
+							x: player.position.x,
+							y: player.position.y,
+							radius: 1500,
+							color: "aqua",
+							time: 20
+						});
+                    }
+                }
+            },
+            query() {
+                if (this.isOn) {
+                    ctx.fillStyle = "hsla(193, 76%, 90%,0.75)"
+                    const offset = 5 * Math.sin(simulation.cycle * 0.015)
+                    ctx.fillRect(this.min.x, this.min.y + offset, this.width, this.height - offset)
+                    if (this.height > 0 && Matter.Query.region([player], this).length) {
+						player.force.y -= (input.up ? 0.02:0.01);
+                    }
+                    //float power ups
+                    powerUpCollide = Matter.Query.region(powerUp, this)
+                    for (let i = 0, len = powerUpCollide.length; i < len; i++) {
+                        const diameter = 2 * powerUpCollide[i].size
+                        const buoyancy = 1 - 0.2 * Math.max(0, Math.min(diameter, this.min.y - powerUpCollide[i].position.y + powerUpCollide[i].size)) / diameter
+                        powerUpCollide[i].force.y -= buoyancy * 1.1 * powerUpCollide[i].mass * simulation.g;
+                        Matter.Body.setVelocity(powerUpCollide[i], {
+                            x: powerUpCollide[i].velocity.x,
+                            y: 0.95 * powerUpCollide[i].velocity.y
+                        });
+                    }
+                }
+            },
+            level(isFill) {
+                if (!m.isBodiesAsleep) {
+                    const growSpeed = 1
+                    if (isFill) {
+                        if (this.height < this.maxHeight) {
+                            this.height += growSpeed
+                            this.min.y -= growSpeed
+                            this.max.y = this.min.y + this.height
+                        }
+                    } else if (this.height > 0) {
+                        this.height -= growSpeed
+                        this.min.y += growSpeed
+                        this.max.y = this.min.y + this.height
+                    }
+                }
+            }
+        }
+    },
     //******************************************************************************************************************
     //******************************************************************************************************************
     //******************************************************************************************************************
@@ -1084,6 +1153,60 @@ const level = {
 				drop.x = player.position.x + Math.random() * 5000 - Math.random() * 5000;
 			} while(Math.sqrt(Math.pow(player.position.x - drop.x, 2) + Math.pow(player.position.y - drop.y, 2)) + Math.PI < 5000)
 		  }
+		}
+		let trees = [];
+		function drawTree(x, y, width, height) {
+		  const trunkColor = '#8B4513'; // Brown
+		  const leafColor = "#008000"; // Green
+
+		  // // Calculate trunk dimensions
+		  // const trunkWidth = width * 0.2;
+		  // const trunkHeight = height * 0.4;
+		  // const trunkX = x + (width - trunkWidth) / 2;
+		  // const trunkY = y + height - trunkHeight;
+
+		  // // Calculate leaf dimensions
+		  // const leafTopWidth = width * 0.8;
+		  // const leafBottomWidth = width * 1.4;
+		  // const leafHeight = height * 0.6;
+		  // const leafX = x + (width - leafTopWidth) / 2;
+		  // const leafY = y + height - trunkHeight - leafHeight;
+
+		  // // Draw trunk
+		  // ctx.fillStyle = trunkColor;
+		  // ctx.fillRect(trunkX, trunkY, trunkWidth, trunkHeight);
+
+		  // // Draw leaves
+		  // ctx.fillStyle = leafColor;
+		  // ctx.beginPath();
+		  // ctx.moveTo(leafX + leafTopWidth / 2, leafY);
+		  // ctx.lineTo(leafX, leafY + leafHeight);
+		  // ctx.lineTo(leafX + leafTopWidth, leafY + leafHeight);
+		  // ctx.closePath();
+		  // ctx.fill();
+		  ctx.save()
+		  ctx.beginPath()
+		  ctx.lineWidth = 2;
+		  ctx.strokeStyle = trunkColor;
+		  ctx.fillStyle = trunkColor;
+		  ctx.strokeRect(x, y, width, height);
+		  ctx.fillRect(x, y, width, height);
+		  ctx.fill()
+		  ctx.stroke()
+		  ctx.restore()
+		  
+		  ctx.save()
+		  ctx.beginPath()
+		  ctx.strokeStyle = leafColor;
+		  ctx.fillStyle = leafColor;
+		  ctx.lineWidth = 5;
+		  ctx.strokeRect(x, y - 100, width, height - width)
+		  ctx.strokeRect(x - 100, y, width * 3, height / 2)		  
+		  ctx.fillRect(x, y - 100, width, height - width)
+		  ctx.fillRect(x - 100, y, width * 3, height / 2)
+		  ctx.stroke()
+		  ctx.fill()
+		  ctx.restore()
 		}
 		function round(num, round = 100) {
 			return Math.ceil(num / round) * round;
@@ -1168,19 +1291,31 @@ const level = {
 			ctx.closePath()
 			ctx.stroke()
 			ctx.fill()
+			for(let i = 0; i < trees.length; i++) {
+				drawTree(trees[i].x, trees[i].y, 100, 400);
+			}
 		};
+		let floor = [];
+		for(let i = 0; i <= 50000; i += 100) {
+			floor.push({x: i, y: round(Math.min(150 * Math.sin(i) * Math.random(), 200 * Math.cos(i) * Math.random()), 25), width: 100, height: 3000})
+			// spawn.mapRect(i, round(Math.min(150 * Math.sin(i) * Math.random(), 200 * Math.cos(i) * Math.random()), 25), 100, 3000)
+		}
+
+		for(let i = 0; i < floor.length; i++) {
+			spawn.mapRect(floor[i].x, floor[i].y, floor[i].width, floor[i].height)
+		}
+		for(let i = 0; i < map.length; i++) {
+			if(Math.random() < 0.1) {
+				trees.push({x: map[i].vertices[0].x, y: map[i].vertices[0].y - 400})
+			}
+		}
         level.setPosToSpawn(0, -150); //normal spawn
         level.defaultZoom = 3000
         simulation.zoomTransition(level.defaultZoom)
         document.body.style.backgroundColor = "skyblue";
-        // spawn.mapRect(-100, 0, 1000, 100);
-		for(let i = 0; i <= 50000; i += 100) {
-			spawn.mapRect(i, round(Math.min(150 * Math.sin(i) * Math.random(), 200 * Math.cos(i) * Math.random()), 25), 100, 3000)
-		}
-		//spawn.mapRect(100, 0, 200, 175);
 		simulation.enableConstructMode()
 		level.customTopLayer = () => {
-			if(raindrops.length < 300) { // too many (like 900) can cause a little bit of lag minus 5 ~ 10 fps, but it really just depends on your computer
+			if(raindrops.length < 100) { // too many (like 900) can cause a little bit of lag minus 5 ~ 10 fps, but it really just depends on your computer
 				raindrops.push(new Raindrop());
 			}
 			for (let i = 0; i < raindrops.length; i++) {

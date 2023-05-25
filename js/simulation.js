@@ -1306,7 +1306,42 @@ const simulation = {
         console.log(out)
         navigator.clipboard.writeText(out).then(function() { /* clipboard successfully set */ }, function() { /* clipboard write failed */ console.log('copy failed') });
         document.getElementById("construct").innerHTML = outHTML
-    },
+    },	
+	createFloatingPolygons(numPolygons, sides, minHeight, maxHeight, minSpeed, maxSpeed) {
+	  const polygonClasses = ['triangle', 'square', 'pentagon', 'hexagon', 'heptagon', 'octagon', 'nonagon', 'decagon'];
+
+	  for (let i = 0; i < numPolygons; i++) {
+		const height = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
+		const speed = Math.floor(Math.random() * (maxSpeed - minSpeed + 1)) + minSpeed;
+		const rotationSpeed = Math.random() * 2 - 1; // Random rotation speed between -1 and 1
+
+		const polygon = document.createElement('div');
+		const polygonClass = polygonClasses[sides - 3]; // Map sides to the corresponding class
+		polygon.classList.add('polygon', polygonClass);
+		polygon.style.left = '0';
+		polygon.style.top = `${Math.random() * (window.innerHeight - height)}px`;
+
+		document.body.appendChild(polygon);
+
+		simulation.animatePolygon(polygon, speed, rotationSpeed);
+	  }
+	},
+	animatePolygon(polygon, speed, rotationSpeed) {
+	  let currentLeft = 0;
+
+	  function updatePosition() {
+		currentLeft += speed;
+		polygon.style.left = `${currentLeft}px`;
+		polygon.style.transform = `rotate(${currentLeft * rotationSpeed}deg)`;
+
+		if (currentLeft < window.innerWidth && simulation.onTitlePage) {
+		  requestAnimationFrame(updatePosition);
+		} else {
+		  document.body.removeChild(polygon);
+		}
+	  }
+	  requestAnimationFrame(updatePosition);
+	},
     // copyToClipBoard(value) {
     //     // Create a fake textarea
     //     const textAreaEle = document.createElement('textarea');
