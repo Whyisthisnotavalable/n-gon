@@ -1007,6 +1007,85 @@ summary {
     text-decoration: underline;
     /* color: #0ad; */
 }
+.triangle {
+  z-index: 999;
+  position: absolute;
+  transition: transform 0.2s ease-in-out;
+  width: 0;
+  height: 0;
+  border-left: 50px solid transparent;
+  border-right: 50px solid transparent;
+  border-bottom: 86.6px solid #ff0000;
+}
+
+.square {
+  z-index: 999;
+  position: absolute;
+  transition: transform 0.2s ease-in-out;
+  width: 100px;
+  height: 100px;
+  background-color: rgb(255,150,0);
+}
+
+.pentagon {
+  z-index: 999;
+  position: absolute;
+  transition: transform 0.2s ease-in-out;
+  width: 100px;
+  height: 100px;
+  background-color: rgb(0,200,180);
+  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+}
+
+.hexagon {
+  z-index: 999;
+  position: absolute;
+  transition: transform 0.2s ease-in-out;
+  width: 100px;
+  height: 100px;
+  background-color: rgb(220,50,205);
+  clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+}
+
+.heptagon {
+  z-index: 999;
+  position: absolute;
+  transition: transform 0.2s ease-in-out;
+  width: 100px;
+  height: 100px;
+  background-color: #FFFFFF55;
+  clip-path: polygon(50% 0%, 85% 15%, 96% 52%, 71% 92%, 29% 92%, 4% 52%, 15% 15%);
+}
+
+.octagon {
+  z-index: 999;
+  position: absolute;
+  transition: transform 0.2s ease-in-out;
+  width: 100px;
+  height: 100px;
+  background-color: #9ccdc6;
+  clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+}
+
+.nonagon {
+  z-index: 999;
+  position: absolute;
+  transition: transform 0.2s ease-in-out;
+  width: 100px;
+  height: 100px;
+  background-color: rgb(150, 150, 255);
+  clip-path: polygon(50% 0%, 78% 13%, 96% 41%, 96% 69%, 78% 87%, 50% 100%, 22% 87%, 4% 69%, 4% 41%);
+}
+
+.decagon {
+  z-index: 999;
+  position: absolute;
+  transition: transform 0.2s ease-in-out;
+  width: 100px;
+  height: 100px;
+  background-color: "#b386e8";
+  clip-path: polygon(50% 0%, 76% 11%, 95% 35%, 99% 65%, 87% 87%, 62% 99%, 38% 99%, 13% 87%, 1% 65%, 5% 35%);
+}
 
 /* #console {
     font-family: monospace;
