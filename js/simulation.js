@@ -1315,25 +1315,26 @@ const simulation = {
 		const speed = Math.floor(Math.random() * (maxSpeed - minSpeed + 1)) + minSpeed;
 		const rotationSpeed = Math.random() * 2 - 1; // Random rotation speed between -1 and 1
 
-		const polygon = document.createElement('div');
+		const polygon = document.createElement('svg');
 		const polygonClass = polygonClasses[sides - 3]; // Map sides to the corresponding class
 		polygon.classList.add('polygon', polygonClass);
 		polygon.style.left = '0';
 		polygon.style.top = `${Math.random() * (window.innerHeight - height)}px`;
-
 		document.body.appendChild(polygon);
-
+		// const xtc = document.getElementById("canvas2").getContext("2d");
+		// xtc.beginPath()
+		
 		simulation.animatePolygon(polygon, speed, rotationSpeed);
 	  }
 	},
 	animatePolygon(polygon, speed, rotationSpeed) {
 	  let currentLeft = 0;
-
+	  const initialY = parseFloat(getComputedStyle(polygon).top);
 	  function updatePosition() {
 		currentLeft += speed;
+		const newY = initialY + Math.sin(currentLeft * 0.001) * 25;
 		polygon.style.left = `${currentLeft}px`;
-		polygon.style.transform = `rotate(${currentLeft * rotationSpeed}deg)`;
-
+		polygon.style.transform = `translateY(${newY}px) rotate(${currentLeft * rotationSpeed}deg)`;
 		if (currentLeft < window.innerWidth && simulation.onTitlePage) {
 		  requestAnimationFrame(updatePosition);
 		} else {

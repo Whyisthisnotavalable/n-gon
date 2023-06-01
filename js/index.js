@@ -1310,8 +1310,8 @@ function cycle() {
 }
 function checkIfOnTitlePage() {
 	if(simulation.onTitlePage) {
-		if(Math.random() < 0.1) {
-			simulation.createFloatingPolygons(1, Math.floor(Math.random() * 10) + 2, 15, 100, 1, 20)
+		if(Math.random() < 0.05) {
+			simulation.createFloatingPolygons(1, Math.floor(Math.random() * 10) + 2, 15, 100, 1, 10)
 		}
 	}
 	requestAnimationFrame(checkIfOnTitlePage)
