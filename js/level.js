@@ -1274,54 +1274,50 @@ const level = {
 		  const noDups = new Set(a);
 		  return a.length !== noDups.size;
 		}
-		const generateTerrain = (isFirst = false) => {
-			if(!isFirst) {
-			  function removeAll(array) {
-				for (let i = 0; i < array.length; i++) {
-					//if(player.position.x - 1000 < array[i].position.x || player.position.x + 1000 > array[i].position.x) {
-						Matter.Composite.remove(engine.world, array[i]);
-					//}
-				}
+		const generateTerrain = () => {
+		  function removeAll(array) {
+			for (let i = 0; i < array.length; i++) {
+				//if(player.position.x - 1000 < array[i].position.x || player.position.x + 1000 > array[i].position.x) {
+					Matter.Composite.remove(engine.world, array[i]);
+				//}
+			}
+		  }
+		  removeAll(map)
+		  map = []
+		  floor = []
+		  lake = []
+		  const playerX = player.position.x;
+		  const history = m.history[(m.cycle - 30 * i) % 600]
+		  
+		  // Check if player has moved right
+		  if (playerX > history.position.x) {
+			for(let i = -7500; i < 7500; i += 100) {
+				let leftRectY = round(perlin.get(Math.cos(round(playerX + i, 100) / 3000), Math.sin(round(playerX + i, 100) / 3000)) * -2500);
+				let leftRect = { x: round(playerX + 100, 100) + i, y: leftRectY, width: 100 + 2, height: 6000};
+				floor.push(leftRect)
+			}
+		  }
+		  // Check if player has moved left
+		  if (playerX < history.position.x) {
+			for(let i = -7500; i < 7500; i += 100) {
+				let rightRectY = round(perlin.get(Math.cos(round(playerX + i - 100, 100) / 3000), Math.sin(round(playerX + i - 100, 100) / 3000)) * -2500);
+				let rightRect = {x: round(playerX, 100) + i, y: rightRectY, width: 100, height: 6000};
+				floor.push(rightRect)
+			}
+		  }
+		  // Spawn the map rects
+		  for (let i = 0; i < floor.length; i++) {
+			  if(Matter.Query.ray(map, { x: floor[i].x + floor[i].width / 2, y: floor[i].y + floor[i].height / 2}, { x: floor[i].x + floor[i].width / 2, y: floor[i].y + floor[i].height / 2}).length === 0) {
+				spawn.mapRectNow(floor[i].x, floor[i].y, floor[i].width, floor[i].height);
 			  }
-			  removeAll(map)
-			  map = []
-			  floor = []
-			  lake = []
-			  const playerX = player.position.x;
-			  const history = m.history[(m.cycle - 30 * i) % 600]
-			  
-			  // Check if player has moved right
-			  if (playerX > history.position.x) {
-				for(let i = -7500; i < 7500; i += 100) {
-					let leftRectY = round(perlin.get(Math.cos(round(playerX + i, 100) / 3000), Math.sin(round(playerX + i, 100) / 3000)) * -2500);
-					let leftRect = { x: round(playerX + 100, 100) + i, y: leftRectY, width: 100 + 2, height: 6000};
-					floor.push(leftRect)
-					console.log(leftRect)
+		  }
+			for(let i = floor.length - 1; i > 0; i--) {
+				if(map[i].vertices[0].y > seaLevel) {
+					lake.push(level.water(map[i].vertices[0].x, seaLevel + 1, 100, Math.abs(map[i].vertices[0].y - 75)))
 				}
-			  }
-			  // Check if player has moved left
-			  if (playerX < history.position.x) {
-				for(let i = -7500; i < 7500; i += 100) {
-					let rightRectY = round(perlin.get(Math.cos(round(playerX + i - 100, 100) / 3000), Math.sin(round(playerX + i - 100, 100) / 3000)) * -2500);
-					let rightRect = {x: round(playerX, 100) + i, y: rightRectY, width: 100, height: 6000};
-					floor.push(rightRect)
-				}
-			  }
-			  // Spawn the map rects
-			  for (let i = 0; i < floor.length; i++) {
-				  if(Matter.Query.ray(map, { x: floor[i].x + floor[i].width / 2, y: floor[i].y + floor[i].height / 2}, { x: floor[i].x + floor[i].width / 2, y: floor[i].y + floor[i].height / 2}).length === 0) {
-					spawn.mapRectNow(floor[i].x, floor[i].y, floor[i].width, floor[i].height);
-				  }
-			  }
-				for(let i = floor.length - 1; i > 0; i--) {
-					if(map[i].vertices[0].y > seaLevel) {
-						lake.push(level.water(map[i].vertices[0].x, seaLevel + 1, 100, Math.abs(map[i].vertices[0].y - 75)))
-					}
-				}
-			} else {
-				
 			}
 		}
+		
 		let mapLength = 0;
         level.custom = () => {
 			// for(let i = 0; i < trees.length; i++) {
@@ -1338,13 +1334,18 @@ const level = {
             }
 		};
 
-		// for(let i = 0; i <= 25000 / 25; i += 100) {
-			// floor.push({x: i - 1, y: round(perlin.get(Math.cos(i / 3000), Math.sin(i / 3000)) * -2500), width: 100 + 2, height: 6000})
-			// // spawn.mapRect(i, round(Math.min(150 * Math.sin(i) * Math.random(), 200 * Math.cos(i) * Math.random()), 25), 100, 3000)
-		// }
-		// for(let i = 0; i < floor.length; i++) {
-			// spawn.mapRectNow(floor[i].x, floor[i].y, floor[i].width, floor[i].height)
-		// }
+		for(let i = -7500; i < 7500; i += 100) {
+			floor.push({x: i - 1, y: round(perlin.get(Math.cos(i / 3000), Math.sin(i / 3000)) * -2500), width: 100 + 2, height: 6000})
+			// spawn.mapRect(i, round(Math.min(150 * Math.sin(i) * Math.random(), 200 * Math.cos(i) * Math.random()), 25), 100, 3000)
+		}
+		for(let i = 0; i < floor.length; i++) {
+			spawn.mapRectNow(floor[i].x + 100, floor[i].y, floor[i].width, floor[i].height)
+		}
+		for(let i = floor.length - 1; i > 0; i--) {
+			if(map[i].vertices[0].y > seaLevel) {
+				lake.push(level.water(map[i].vertices[0].x, seaLevel + 1, 100, Math.abs(map[i].vertices[0].y - 75)))
+			}
+		}
 		// for(let i = 0; i < map.length; i++) {
 			// if(Math.random() < 0.1) {
 				// trees.push({x: map[i].vertices[0].x, y: map[i].vertices[0].y - 400})
