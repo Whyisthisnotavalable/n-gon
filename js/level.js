@@ -1100,6 +1100,7 @@ const level = {
 					
 					
 					//ctx.fillRect(this.min.x, this.min.y + offset, this.width, this.height - offset + 4000)
+					
                     if (this.height > 0 && Matter.Query.region([player], this).length) {
 						player.force.y -= (input.up ? 0.01:0.005);
 						const slowY = (player.velocity.y > 0) ? Math.max(0.8, 1 - 0.002 * player.velocity.y * player.velocity.y) : Math.max(0.98, 1 - 0.001 * Math.abs(player.velocity.y)) //down : up
@@ -1107,22 +1108,22 @@ const level = {
 							x: Math.max(0.95, 1 - 0.036 * Math.abs(player.velocity.x)) * player.velocity.x,
 							y: slowY * player.velocity.y
 						});
-						const randomValue = (50 * Math.random())
-						const randomValue2 = (Math.random() > 0.5 ? (50 * Math.random()) : (-50 * Math.random()))
-						simulation.drawList.push({ //add water to draw queue
-							x: headSensor.position.x + randomValue2,
-							y: headSensor.position.y + randomValue,
-							radius: 10,
-							color: "hsla(193, 76%, 90%,0.75)",
-							time: 2
-						});						
-						simulation.drawList.push({ //add water to draw queue
-							x: headSensor.position.x + randomValue2,
-							y: headSensor.position.y + randomValue,
-							radius: 6,
-							color: "#FFFFFF55",
-							time: 2
-						});
+						// const randomValue = (50 * Math.random())
+						// const randomValue2 = (Math.random() > 0.5 ? (50 * Math.random()) : (-50 * Math.random()))
+						// simulation.drawList.push({ //add water to draw queue
+							// x: headSensor.position.x + randomValue2,
+							// y: headSensor.position.y + randomValue,
+							// radius: 10,
+							// color: "hsla(193, 76%, 90%,0.75)",
+							// time: 2
+						// });						
+						// simulation.drawList.push({ //add water to draw queue
+							// x: headSensor.position.x + randomValue2,
+							// y: headSensor.position.y + randomValue,
+							// radius: 6,
+							// color: "#FFFFFF55",
+							// time: 2
+						// });
                     }
                     //float power ups
                     powerUpCollide = Matter.Query.region(powerUp, this)
@@ -1196,7 +1197,10 @@ const level = {
     //******************************************************************************************************************
     openWorldTest() {
 		const seaLevel = 75;
-		color.map = "transparent";
+		let floor = [];
+		let trees = [];
+		let lake = [];
+		color.map = "black";
 		function Raindrop() {
 		  this.y = player.position.y + Math.random() * -5000 - Math.random() * 5000;
 		  this.x = player.position.x + Math.random() * 5000 - Math.random() * 5000;
@@ -1236,36 +1240,9 @@ const level = {
 			} while(Math.sqrt(Math.pow(player.position.x - drop.x, 2) + Math.pow(player.position.y - drop.y, 2)) + Math.PI < 5000)
 		  }
 		}
-		let trees = [];
 		function drawTree(x, y, width, height) {
 		  const trunkColor = '#8B4513'; // Brown
 		  const leafColor = "#008000"; // Green
-
-		  // // Calculate trunk dimensions
-		  // const trunkWidth = width * 0.2;
-		  // const trunkHeight = height * 0.4;
-		  // const trunkX = x + (width - trunkWidth) / 2;
-		  // const trunkY = y + height - trunkHeight;
-
-		  // // Calculate leaf dimensions
-		  // const leafTopWidth = width * 0.8;
-		  // const leafBottomWidth = width * 1.4;
-		  // const leafHeight = height * 0.6;
-		  // const leafX = x + (width - leafTopWidth) / 2;
-		  // const leafY = y + height - trunkHeight - leafHeight;
-
-		  // // Draw trunk
-		  // ctx.fillStyle = trunkColor;
-		  // ctx.fillRect(trunkX, trunkY, trunkWidth, trunkHeight);
-
-		  // // Draw leaves
-		  // ctx.fillStyle = leafColor;
-		  // ctx.beginPath();
-		  // ctx.moveTo(leafX + leafTopWidth / 2, leafY);
-		  // ctx.lineTo(leafX, leafY + leafHeight);
-		  // ctx.lineTo(leafX + leafTopWidth, leafY + leafHeight);
-		  // ctx.closePath();
-		  // ctx.fill();
 		  ctx.save()
 		  ctx.beginPath()
 		  ctx.lineWidth = 2;
@@ -1291,45 +1268,104 @@ const level = {
 		  ctx.restore()
 		}
 		function round(num, round = 25) {
-			return Math.ceil(num / round) * round; 
+			return Math.floor(num / round) * round; 
 		}
-        level.custom = () => {
-			for(let i = 0; i < trees.length; i++) {
-				if(trees[i].y + 400 < 75) {
-					drawTree(trees[i].x, trees[i].y, 100, 400);
+		function hasDuplicates(a) {
+		  const noDups = new Set(a);
+		  return a.length !== noDups.size;
+		}
+		const generateTerrain = (isFirst = false) => {
+			if(!isFirst) {
+			  function removeAll(array) {
+				for (let i = 0; i < array.length; i++) {
+					//if(player.position.x - 1000 < array[i].position.x || player.position.x + 1000 > array[i].position.x) {
+						Matter.Composite.remove(engine.world, array[i]);
+					//}
 				}
+			  }
+			  removeAll(map)
+			  map = []
+			  floor = []
+			  lake = []
+			  const playerX = player.position.x;
+			  const history = m.history[(m.cycle - 30 * i) % 600]
+			  
+			  // Check if player has moved right
+			  if (playerX > history.position.x) {
+				for(let i = -7500; i < 7500; i += 100) {
+					let leftRectY = round(perlin.get(Math.cos(round(playerX + i, 100) / 3000), Math.sin(round(playerX + i, 100) / 3000)) * -2500);
+					let leftRect = { x: round(playerX + 100, 100) + i, y: leftRectY, width: 100 + 2, height: 6000};
+					floor.push(leftRect)
+					console.log(leftRect)
+				}
+			  }
+			  // Check if player has moved left
+			  if (playerX < history.position.x) {
+				for(let i = -7500; i < 7500; i += 100) {
+					let rightRectY = round(perlin.get(Math.cos(round(playerX + i - 100, 100) / 3000), Math.sin(round(playerX + i - 100, 100) / 3000)) * -2500);
+					let rightRect = {x: round(playerX, 100) + i, y: rightRectY, width: 100, height: 6000};
+					floor.push(rightRect)
+				}
+			  }
+			  // Spawn the map rects
+			  for (let i = 0; i < floor.length; i++) {
+				  if(Matter.Query.ray(map, { x: floor[i].x + floor[i].width / 2, y: floor[i].y + floor[i].height / 2}, { x: floor[i].x + floor[i].width / 2, y: floor[i].y + floor[i].height / 2}).length === 0) {
+					spawn.mapRectNow(floor[i].x, floor[i].y, floor[i].width, floor[i].height);
+				  }
+			  }
+				for(let i = floor.length - 1; i > 0; i--) {
+					if(map[i].vertices[0].y > seaLevel) {
+						lake.push(level.water(map[i].vertices[0].x, seaLevel + 1, 100, Math.abs(map[i].vertices[0].y - 75)))
+					}
+				}
+			} else {
+				
 			}
+		}
+		let mapLength = 0;
+        level.custom = () => {
+			// for(let i = 0; i < trees.length; i++) {
+				// if(trees[i].y + 400 < 75) {
+					// drawTree(trees[i].x, trees[i].y, 100, 400);
+				// }
+			// }
+			if (m.pos.x > 0.55 * 100 + mapLength * 100) {
+                mapLength++
+                generateTerrain()
+            } else if (m.pos.x < -0.55 * 100 + mapLength * 100) {
+                mapLength--
+                generateTerrain()
+            }
 		};
-		let floor = [];
-		let lake = []
-		for(let i = 0; i <= 50000; i += 100) {
-			floor.push({x: i - 1, y: round(perlin.get(Math.cos(i / 3000), Math.sin(i / 3000)) * -2500), width: 100 + 2, height: 6000})
-			// spawn.mapRect(i, round(Math.min(150 * Math.sin(i) * Math.random(), 200 * Math.cos(i) * Math.random()), 25), 100, 3000)
-		}
-		for(let i = 0; i < floor.length; i++) {
-			spawn.mapRect(floor[i].x, floor[i].y, floor[i].width, floor[i].height)
-		}		
-		for(let i = floor.length - 1; i > 0; i--) {
-			if(map[i].vertices[0].y > seaLevel) {
-				lake.push(level.water(map[i].vertices[0].x, seaLevel + 1, 100, Math.abs(map[i].vertices[0].y - 75)))
-			}
-		}
-		for(let i = 0; i < map.length; i++) {
-			if(Math.random() < 0.1) {
-				trees.push({x: map[i].vertices[0].x, y: map[i].vertices[0].y - 400})
-			}
-		}
-		for(let i = 0; i < map.length; i++) {
-			if(Math.random() < 0.2) {
-				spawn.hopper(map[i].position.x, map[i].vertices[0].y)
-			}
-		}
+
+		// for(let i = 0; i <= 25000 / 25; i += 100) {
+			// floor.push({x: i - 1, y: round(perlin.get(Math.cos(i / 3000), Math.sin(i / 3000)) * -2500), width: 100 + 2, height: 6000})
+			// // spawn.mapRect(i, round(Math.min(150 * Math.sin(i) * Math.random(), 200 * Math.cos(i) * Math.random()), 25), 100, 3000)
+		// }
+		// for(let i = 0; i < floor.length; i++) {
+			// spawn.mapRectNow(floor[i].x, floor[i].y, floor[i].width, floor[i].height)
+		// }
+		// for(let i = 0; i < map.length; i++) {
+			// if(Math.random() < 0.1) {
+				// trees.push({x: map[i].vertices[0].x, y: map[i].vertices[0].y - 400})
+			// }
+		// }
+		// for(let i = 0; i < map.length; i++) {
+			// if(Math.random() < 0.2) {
+				// spawn.hopper(map[i].position.x, map[i].vertices[0].y)
+			// }
+		// }
         level.setPosToSpawn(0, -150); //normal spawn
         level.defaultZoom = 3000
         simulation.zoomTransition(level.defaultZoom)
         document.body.style.backgroundColor = "skyblue";
 		simulation.enableConstructMode()
+				  function removeAll(array) {
+		  	for (let i = 0; i < array.length; ++i) if(player.position.x - 1000 < array[i].position.x || player.position.x + 1000 > array[i].position.x) Matter.Composite.remove(engine.world, array[i]);
+		  }
+		  removeAll(map)
 		level.customTopLayer = () => {
+			for(let d = 0; d < Math.abs(Math.sin(map.length)); d++) {
 			ctx.beginPath()
 			ctx.moveTo(map[0].vertices[0].x, map[1].vertices[3].y)
 			for(let i = 0; i < map.length; i++) {
@@ -1409,14 +1445,15 @@ const level = {
 			ctx.closePath()
 			ctx.stroke()
 			ctx.fill()
-			if(raindrops.length < 100) { // too many (like 900) can cause a little bit of lag minus 5 ~ 10 fps, but it really just depends on your computer
-				raindrops.push(new Raindrop());
 			}
-			for (let i = 0; i < raindrops.length; i++) {
-				const drop = raindrops[i];
-				drawRaindrop(drop);
-				updateRaindrop(drop);
-			}
+			// if(raindrops.length < 100) { // too many (like 900) can cause a little bit of lag minus 5 ~ 10 fps, but it really just depends on your computer
+				// raindrops.push(new Raindrop());
+			// }
+			// for (let i = 0; i < raindrops.length; i++) {
+				// const drop = raindrops[i];
+				// drawRaindrop(drop);
+				// updateRaindrop(drop);
+			// }
 			for(let i = 0; i < lake.length; i++) {
 				lake[i].query()
 			}

@@ -5137,6 +5137,24 @@ const spawn = {
     mapVertex(x, y, vector, properties) { //adds shape to map array
         map[map.length] = Matter.Bodies.fromVertices(x, y, Vertices.fromPath(vector), properties);
     },
+	mapRectNow(x, y, width, height, properties, isRedrawMap = true) { //adds rectangle to map array in the middle of a level
+        map[map.length] = Bodies.rectangle(x + width / 2, y + height / 2, width, height, properties);
+        const who = map[map.length - 1]
+        who.collisionFilter.category = cat.map;
+        who.collisionFilter.mask = cat.player | cat.map | cat.body | cat.bullet | cat.powerUp | cat.mob | cat.mobBullet;
+        Matter.Body.setStatic(who, true); //make static
+        Composite.add(engine.world, who); //add to world
+        if (isRedrawMap) simulation.draw.setPaths()
+    },
+    mapVertexNow(x, y, vector, properties) { //adds shape to map array in the middle of a level
+        map[map.length] = Matter.Bodies.fromVertices(x, y, Vertices.fromPath(vector), properties);
+        const who = map[map.length - 1]
+        who.collisionFilter.category = cat.map;
+        who.collisionFilter.mask = cat.player | cat.map | cat.body | cat.bullet | cat.powerUp | cat.mob | cat.mobBullet;
+        Matter.Body.setStatic(who, true); //make static
+        Composite.add(engine.world, who); //add to world
+        if (isRedrawMap) simulation.draw.setPaths() //this is a bit slow on processing so maybe it's better to run after you spawn several different shapes
+    },
     //complex map templates
     spawnBuilding(x, y, w, h, leftDoor, rightDoor, walledSide) {
         this.mapRect(x, y, w, 25); //roof
