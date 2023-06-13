@@ -1303,6 +1303,7 @@ const level = {
 				let rightRectY = round(perlin.get(Math.cos(round(playerX + i - 100, 100) / 3000), Math.sin(round(playerX + i - 100, 100) / 3000)) * -2500);
 				let rightRect = {x: round(playerX, 100) + i, y: rightRectY, width: 100, height: 6000};
 				floor.push(rightRect)
+				
 			}
 		  }
 		  // Spawn the map rects
@@ -1328,9 +1329,11 @@ const level = {
 			if (m.pos.x > 0.55 * 100 + mapLength * 100) {
                 mapLength++
                 generateTerrain()
+				simulation.minimapcount += 100
             } else if (m.pos.x < -0.55 * 100 + mapLength * 100) {
                 mapLength--
                 generateTerrain()
+				simulation.minimapcount -= 100
             }
 		};
 
@@ -1361,12 +1364,11 @@ const level = {
         simulation.zoomTransition(level.defaultZoom)
         document.body.style.backgroundColor = "skyblue";
 		simulation.enableConstructMode()
-				  function removeAll(array) {
-		  	for (let i = 0; i < array.length; ++i) if(player.position.x - 1000 < array[i].position.x || player.position.x + 1000 > array[i].position.x) Matter.Composite.remove(engine.world, array[i]);
-		  }
-		  removeAll(map)
+		function removeAll(array) {
+			for (let i = 0; i < array.length; ++i) Matter.Composite.remove(engine.world, array[i]);
+		}
+		removeAll(map)
 		level.customTopLayer = () => {
-			for(let d = 0; d < Math.abs(Math.sin(map.length)); d++) {
 			ctx.beginPath()
 			ctx.moveTo(map[0].vertices[0].x, map[1].vertices[3].y)
 			for(let i = 0; i < map.length; i++) {
@@ -1446,7 +1448,6 @@ const level = {
 			ctx.closePath()
 			ctx.stroke()
 			ctx.fill()
-			}
 			// if(raindrops.length < 100) { // too many (like 900) can cause a little bit of lag minus 5 ~ 10 fps, but it really just depends on your computer
 				// raindrops.push(new Raindrop());
 			// }
@@ -1461,3 +1462,13 @@ const level = {
 		};
     },
 };
+
+addEventListener("keydown", function(event) {
+	if(event.key == "Shift") {
+		if(simulation.minimapscale > 1) {
+			simulation.minimapscale = 0
+		} else {
+			simulation.minimapscale = 1000
+		}
+	} 
+})

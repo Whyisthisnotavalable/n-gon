@@ -26,7 +26,8 @@ const simulation = {
         m.draw();
         m.hold();
         // v.draw(); //working on visibility work in progress
-        level.customTopLayer();
+		level.customTopLayer();
+		simulation.drawMinimap(canvas.width2 - (simulation.minimapcount * ((canvas.width2 / 20) / canvas.width2)), canvas.height2, canvas.width2 / 20, canvas.height2 / 20)
         // simulation.draw.drawMapPath();
         b.fire();
         b.bulletRemove();
@@ -108,6 +109,7 @@ const simulation = {
         y: 0
     },
     g: 0.0024, // applies to player, bodies, and power ups  (not mobs)
+	minimapscale: 1000,
     onTitlePage: true,
     isCheating: false,
     paused: false,
@@ -146,8 +148,58 @@ const simulation = {
     //   requestAnimationFrame(normalFPS);
     // },
     // clip() {
-
     // },
+	minimapcount: 0,
+	drawMinimap(x, y, width, height) {
+	  const scaleX = width / canvas.width2;
+	  const scaleY = height / canvas.height2;
+	  ctx.save()
+	  ctx.setTransform(1, simulation.minimapscale, 0, 1, 0, 0); 
+	  ctx.globalCompositeOperation = "source-over"
+	  for (let i = 0; i < map.length; i++) {
+		const vertices = map[i].vertices;
+
+		ctx.beginPath();
+		ctx.moveTo(x + vertices[0].x * scaleX, y + vertices[0].y * scaleY);
+
+		for (let j = 1; j < vertices.length; j++) {
+		  ctx.lineTo(x + vertices[j].x * scaleX, y + vertices[j].y * scaleY);
+		}
+
+		ctx.closePath();
+		ctx.fillStyle = "#00000088"
+		ctx.strokeStyle = "transparent";
+		ctx.lineWidth = 1;
+		ctx.stroke();
+		ctx.fill()
+	  }
+	  ctx.beginPath();
+	  ctx.strokeStyle = "#000";
+	  ctx.fillStyle = m.bodyGradient
+	  ctx.arc(x + player.position.x * scaleX, y + player.position.y * scaleY, 30 / 5, 0, 2 * Math.PI);
+	  ctx.fill();
+	  ctx.lineWidth = 1;
+	  ctx.stroke()
+	  ctx.beginPath()
+	  ctx.arc(x + player.position.x * scaleX + 3, y + player.position.y * scaleY, 4 / 5, 0, 2 * Math.PI);
+	  ctx.strokeStyle = "#000";
+	  ctx.lineWidth = 1;
+	  ctx.stroke();
+	  ctx.fill()
+	  
+	  for(let i = 0; i < mob.length; i++) {
+		  if(!mob[i].isMobBullet || !mob[i].isOrbital) {
+			  ctx.beginPath()
+			  ctx.arc(x + mob[i].position.x * scaleX, y + mob[i].position.y * scaleY, mob[i].radius / 20, 0, 2 * Math.PI);
+			  ctx.strokeStyle = "transparent";
+			  ctx.lineWidth = 1;
+			  ctx.fillStyle = mob[i].fill;
+			  ctx.fill()
+			  ctx.stroke()
+		  }
+	  }
+	  ctx.restore()
+	},
     pixelGraphics() {
         //copy current canvas pixel data
         let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
