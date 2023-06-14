@@ -657,6 +657,7 @@ const input = {
     down: false, // crouch
     left: false,
     right: false,
+	map: false,
     isPauseKeyReady: true,
     key: {
         fire: "KeyF",
@@ -668,7 +669,8 @@ const input = {
         pause: "KeyP",
         nextGun: "KeyE",
         previousGun: "KeyQ",
-        testing: "KeyT"
+        testing: "KeyT",
+		map: "Shift"
     },
     setDefault() {
         input.key = {
@@ -681,7 +683,8 @@ const input = {
             pause: "KeyP",
             nextGun: "KeyE",
             previousGun: "KeyQ",
-            testing: "KeyT"
+            testing: "KeyT",
+			map: "Shift"
         }
         input.controlTextUpdate()
     },
@@ -700,6 +703,7 @@ const input = {
         document.getElementById("key-next-gun").innerHTML = cleanText(input.key.nextGun)
         document.getElementById("key-previous-gun").innerHTML = cleanText(input.key.previousGun)
         document.getElementById("key-testing").innerHTML = cleanText(input.key.testing) //if (localSettings.loreCount > 0) 
+        document.getElementById("key-map").innerHTML = cleanText(input.key.map) //if (localSettings.loreCount > 0) 
 
         document.getElementById("splash-up").innerHTML = cleanText(input.key.up)[0]
         document.getElementById("splash-down").innerHTML = cleanText(input.key.down)[0]
@@ -724,6 +728,7 @@ const input = {
         document.getElementById("key-next-gun").style.background = backgroundColor
         document.getElementById("key-previous-gun").style.background = backgroundColor
         document.getElementById("key-testing").style.background = backgroundColor
+        document.getElementById("key-map").style.background = backgroundColor
         if (input.focus) input.focus.style.background = 'rgb(0, 200, 255)';
     },
     setKeys(event) {
@@ -742,7 +747,8 @@ const input = {
                 event.code === input.key.pause ||
                 event.code === input.key.nextGun ||
                 event.code === input.key.previousGun ||
-                event.code === input.key.testing
+                event.code === input.key.testing ||
+                event.code === input.key.map 
             )) {
             switch (input.focus.id) {
                 case "key-fire":
@@ -774,6 +780,9 @@ const input = {
                     break;
                 case "key-testing":
                     input.key.testing = event.code
+                    break;                
+				case "key-map":
+                    input.key.map = event.code
                     break;
             }
         }
@@ -825,6 +834,9 @@ window.addEventListener("keyup", function(event) {
         case input.key.field:
             input.field = false
             break
+		case input.key.map:
+            input.map = false
+            break;
     }
 });
 
@@ -853,7 +865,10 @@ window.addEventListener("keydown", function(event) {
         case input.key.field:
             event.preventDefault();
             input.field = true
-            break
+            break        
+		case input.key.map:
+            input.map = true
+            break;
         case input.key.nextGun:
             simulation.nextGun();
             break

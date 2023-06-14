@@ -3,6 +3,11 @@
 const simulation = {
     loop() {}, //main game loop, gets set to normal or testing loop
     normalLoop() {
+		if(input.map) {
+			simulation.minimapscale = 0
+		} else {
+			simulation.minimapscale = 1000
+		}
         simulation.gravity();
         Engine.update(engine, simulation.delta);
         simulation.wipe();
