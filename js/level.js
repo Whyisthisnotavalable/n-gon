@@ -1462,13 +1462,3 @@ const level = {
 		};
     },
 };
-
-// addEventListener("keydown", function(event) {
-	// if(event.key == "Shift") {
-		// if(simulation.minimapscale > 1) {
-			// simulation.minimapscale = 0
-		// } else {
-			// simulation.minimapscale = 1000
-		// }
-	// } 
-// })

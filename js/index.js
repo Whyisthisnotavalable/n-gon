@@ -670,7 +670,7 @@ const input = {
         nextGun: "KeyE",
         previousGun: "KeyQ",
         testing: "KeyT",
-		map: "Shift"
+		map: "ShiftLeft"
     },
     setDefault() {
         input.key = {
@@ -684,7 +684,7 @@ const input = {
             nextGun: "KeyE",
             previousGun: "KeyQ",
             testing: "KeyT",
-			map: "Shift"
+			map: "ShiftLeft"
         }
         input.controlTextUpdate()
     },
