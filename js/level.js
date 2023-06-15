@@ -1502,14 +1502,14 @@ const level = {
 			}
 			ctx.fillStyle = "#D2D1CD";
 			ctx.fill()
-			if(raindrops.length < 100) { // too many (like 900) can cause a little bit of lag minus 5 ~ 10 fps, but it really just depends on your computer
-				raindrops.push(new Raindrop());
-			}
-			for (let i = 0; i < raindrops.length; i++) {
-				const drop = raindrops[i];
-				drawRaindrop(drop);
-				updateRaindrop(drop);
-			}
+			// if(raindrops.length < 100) { // too many (like 900) can cause a little bit of lag minus 5 ~ 10 fps, but it really just depends on your computer
+				// raindrops.push(new Raindrop());
+			// }
+			// for (let i = 0; i < raindrops.length; i++) {
+				// const drop = raindrops[i];
+				// drawRaindrop(drop);
+				// updateRaindrop(drop);
+			// }
 			for(let i = 0; i < lake.length; i++) {
 				lake[i].query()
 			}
