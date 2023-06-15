@@ -1096,7 +1096,7 @@ const level = {
 					ctx.globalCompositeOperation = "hue"
 					ctx.fillStyle = "#ccc"; 
 					ctx.fillRect(this.min.x - 2, this.max.y - 2, this.width + 4, 75 + 4)
-					ctx.globalCompositeOperation = "destination-over"
+					ctx.globalCompositeOperation = "source-over"
 					
 					
 					//ctx.fillRect(this.min.x, this.min.y + offset, this.width, this.height - offset + 4000)
@@ -1277,9 +1277,9 @@ const level = {
 		const generateTerrain = () => {
 		  function removeAll(array) {
 			for (let i = 0; i < array.length; i++) {
-				//if(player.position.x - 1000 < array[i].position.x || player.position.x + 1000 > array[i].position.x) {
+				// if(map[i].area == 612000) {
 					Matter.Composite.remove(engine.world, array[i]);
-				//}
+				// }
 			}
 		  }
 		  removeAll(map)
@@ -1301,7 +1301,7 @@ const level = {
 		  if (playerX < history.position.x) {
 			for(let i = -7500; i < 7500; i += 100) {
 				let rightRectY = round(perlin.get(Math.cos(round(playerX + i - 100, 100) / 3000), Math.sin(round(playerX + i - 100, 100) / 3000)) * -2500);
-				let rightRect = {x: round(playerX, 100) + i, y: rightRectY, width: 100, height: 6000};
+				let rightRect = {x: round(playerX, 100) + i, y: rightRectY, width: 100 + 2, height: 6000};
 				floor.push(rightRect)
 				
 			}
@@ -1317,6 +1317,16 @@ const level = {
 					lake.push(level.water(map[i].vertices[0].x, seaLevel + 1, 100, Math.abs(map[i].vertices[0].y - 75)))
 				}
 			}
+			// for(let i = 0; i < trees.length - 1; i++) {
+				// if(Matter.Query.ray(map, {x: trees[i].x + 50, y: 1000}, {x:trees[i].x + 50, y: trees[i].y}).length === 0) {
+					// trees.splice(i, 1)
+				// }
+			// }
+			// for(let i = trees.length; i < map.length; i++) {
+				// if(trees.length < 30 && Math.random() < 0.008) { //8% spawn rate for trees
+					// trees.push({x: map[i].vertices[0].x, y: map[i].vertices[0].y - 400})
+				// }
+			// }
 		}
 		
 		let mapLength = 0;
@@ -1349,8 +1359,8 @@ const level = {
 				lake.push(level.water(map[i].vertices[0].x, seaLevel + 1, 100, Math.abs(map[i].vertices[0].y - 75)))
 			}
 		}
-		// for(let i = 0; i < map.length; i++) {
-			// if(Math.random() < 0.1) {
+		// for(let i = trees.length; i < map.length; i++) {
+			// if(trees.length < 30 && Math.random() < 0.008) { //8% spawn rate for trees
 				// trees.push({x: map[i].vertices[0].x, y: map[i].vertices[0].y - 400})
 			// }
 		// }
@@ -1362,7 +1372,7 @@ const level = {
         level.setPosToSpawn(0, -150); //normal spawn
         level.defaultZoom = 3000
         simulation.zoomTransition(level.defaultZoom)
-        document.body.style.backgroundColor = "skyblue";
+        document.body.style.backgroundColor = "#5c54a4";
 		simulation.enableConstructMode()
 		function removeAll(array) {
 			for (let i = 0; i < array.length; ++i) Matter.Composite.remove(engine.world, array[i]);
@@ -1372,12 +1382,16 @@ const level = {
 			ctx.beginPath()
 			ctx.moveTo(map[0].vertices[0].x, map[1].vertices[3].y)
 			for(let i = 0; i < map.length; i++) {
-				ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y)
-				ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y)
+				if(map[i].area == 612000) {
+					ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y)
+					ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y)
+				}
 			}
 			for(let i = map.length - 1; i > 0; i--) {
-				ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y + 25)
-				ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y + 25)
+				if(map[i].area == 612000) {
+					ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y + 25)
+					ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y + 25)
+				}
 			}
 			ctx.strokeStyle = "#7CFC00";
 			ctx.fillStyle = "#7CFC00";
@@ -1388,12 +1402,16 @@ const level = {
 			ctx.beginPath()
 			ctx.lineTo(map[0].vertices[3].x, map[0].vertices[3].y + 25)
 			for(let i = 0; i < map.length; i++) {
-				ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y + 25)
-				ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y + 25)
+				if(map[i].area == 612000) {
+					ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y + 25)
+					ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y + 25)
+				}
 			}
 			for(let i = map.length - 1; i > 0; i--) {
-				ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y + 75)
-				ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y + 75)
+				if(map[i].area == 612000) {
+					ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y + 75)
+					ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y + 75)
+				}
 			}
 			ctx.strokeStyle = "brown";
 			ctx.fillStyle = "brown";
@@ -1404,12 +1422,16 @@ const level = {
 			ctx.beginPath()
 			ctx.lineTo(map[0].vertices[3].x, map[0].vertices[3].y + 75)
 			for(let i = 0; i < map.length; i++) {
-				ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y + 75)
-				ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y + 75)
+				if(map[i].area == 612000) {
+					ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y + 75)
+					ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y + 75)
+				}
 			}
 			for(let i = map.length - 1; i > 0; i--) {
-				ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y + 300)
-				ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y + 300)
+				if(map[i].area == 612000) {
+					ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y + 300)
+					ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y + 300)
+				}
 			}
 			ctx.strokeStyle = "lightgray";
 			ctx.fillStyle = "lightgray";
@@ -1420,12 +1442,16 @@ const level = {
 			ctx.beginPath()
 			ctx.lineTo(map[0].vertices[3].x, map[0].vertices[3].y + 300)
 			for(let i = 0; i < map.length; i++) {
-				ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y + 300)
-				ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y + 300)
+				if(map[i].area == 612000) {
+					ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y + 300)
+					ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y + 300)
+				}
 			}
 			for(let i = map.length - 1; i > 0; i--) {
-				ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y + 500)
-				ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y + 500)
+				if(map[i].area == 612000) {
+					ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y + 500)
+					ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y + 500)
+				}
 			}
 			ctx.strokeStyle = "darkgray";
 			ctx.fillStyle = "darkgray";
@@ -1436,12 +1462,16 @@ const level = {
 			ctx.beginPath()
 			ctx.lineTo(map[0].vertices[3].x, map[0].vertices[3].y)
 			for(let i = 0; i < map.length; i++) {
-				ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y + 500)
-				ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y + 500)
+				if(map[i].area == 612000) {
+					ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y + 500)
+					ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y + 500)
+				}
 			}
 			for(let i = map.length - 1; i > 0; i--) {
-				ctx.lineTo(map[i].vertices[1].x, map[i].vertices[3].y)
-				ctx.lineTo(map[i].vertices[0].x, map[i].vertices[3].y)
+				if(map[i].area == 612000) {
+					ctx.lineTo(map[i].vertices[1].x, map[i].vertices[3].y)
+					ctx.lineTo(map[i].vertices[0].x, map[i].vertices[3].y)
+				}
 			}
 			ctx.strokeStyle = "gray";
 			ctx.fillStyle = "gray";
