@@ -703,7 +703,7 @@ const input = {
         document.getElementById("key-next-gun").innerHTML = cleanText(input.key.nextGun)
         document.getElementById("key-previous-gun").innerHTML = cleanText(input.key.previousGun)
         document.getElementById("key-testing").innerHTML = cleanText(input.key.testing) //if (localSettings.loreCount > 0) 
-        document.getElementById("key-map").innerHTML = cleanText(input.key.map) //if (localSettings.loreCount > 0) 
+        document.getElementById("key-map").innerHTML = (input.key.map)
 
         // document.getElementById("splash-up").innerHTML = cleanText(input.key.up)[0]
         // document.getElementById("splash-down").innerHTML = cleanText(input.key.down)[0]
