@@ -690,7 +690,7 @@ const input = {
     },
     controlTextUpdate() {
         function cleanText(text) {
-            return text.replace('Key', '').replace('Digit', '')
+            return text.replace('Key', '').replace('Digit', '').replace('Left', '').replace('Right', '')
         }
         if (!input.key.fire) input.key.fire = "KeyF"
         document.getElementById("key-fire").innerHTML = cleanText(input.key.fire)
