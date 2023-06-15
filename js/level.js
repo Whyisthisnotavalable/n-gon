@@ -3,6 +3,11 @@ let map = []; //all static bodies
 let cons = []; //all constraints between a point and a body
 let consBB = []; //all constraints between two bodies
 let composite = [] //rotors and other map elements that don't fit 
+let structures = [{
+	box(x, y) {
+		spawn.mapRectNow(x, y, 100, 100)
+	}
+}]
 const level = {
     defaultZoom: 1400,
     onLevel: -1,
@@ -1275,11 +1280,15 @@ const level = {
 		  return a.length !== noDups.size;
 		}
 		const generateTerrain = () => {
+		  let oldMap = []
 		  function removeAll(array) {
 			for (let i = 0; i < array.length; i++) {
-				// if(map[i].area == 612000) {
+				if(map[i].area == 612000) {
 					Matter.Composite.remove(engine.world, array[i]);
-				// }
+				} else {
+					Matter.Composite.remove(engine.world, array[i]);
+					oldMap.push(array[i])
+				}
 			}
 		  }
 		  removeAll(map)
@@ -1327,6 +1336,9 @@ const level = {
 					// trees.push({x: map[i].vertices[0].x, y: map[i].vertices[0].y - 400})
 				// }
 			// }
+			for(let i = 0; i < oldMap.length; i++) {
+				spawn.mapRectNow(oldMap[i].vertices[0].x, oldMap[i].vertices[0].y, Math.abs(Math.abs(oldMap[i].vertices[1].x) - Math.abs(oldMap[i].vertices[0].x)), Math.abs(Math.abs(oldMap[i].vertices[3].y) - Math.abs(oldMap[i].vertices[0].y)))
+			}
 		}
 		
 		let mapLength = 0;
@@ -1478,14 +1490,26 @@ const level = {
 			ctx.closePath()
 			ctx.stroke()
 			ctx.fill()
-			// if(raindrops.length < 100) { // too many (like 900) can cause a little bit of lag minus 5 ~ 10 fps, but it really just depends on your computer
-				// raindrops.push(new Raindrop());
-			// }
-			// for (let i = 0; i < raindrops.length; i++) {
-				// const drop = raindrops[i];
-				// drawRaindrop(drop);
-				// updateRaindrop(drop);
-			// }
+			
+			ctx.beginPath()
+			for(let i = 0; i < map.length; i++) {
+				if(map[i].area != 612000) {
+					ctx.moveTo(map[i].vertices[0].x, map[i].vertices[0].y)
+					for(let j = 0; j < map[i].vertices.length; j++) {
+						ctx.lineTo(map[i].vertices[j].x, map[i].vertices[j].y)
+					}
+				}
+			}
+			ctx.fillStyle = "#D2D1CD";
+			ctx.fill()
+			if(raindrops.length < 100) { // too many (like 900) can cause a little bit of lag minus 5 ~ 10 fps, but it really just depends on your computer
+				raindrops.push(new Raindrop());
+			}
+			for (let i = 0; i < raindrops.length; i++) {
+				const drop = raindrops[i];
+				drawRaindrop(drop);
+				updateRaindrop(drop);
+			}
 			for(let i = 0; i < lake.length; i++) {
 				lake[i].query()
 			}

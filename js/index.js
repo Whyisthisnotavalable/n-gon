@@ -705,12 +705,12 @@ const input = {
         document.getElementById("key-testing").innerHTML = cleanText(input.key.testing) //if (localSettings.loreCount > 0) 
         document.getElementById("key-map").innerHTML = cleanText(input.key.map) //if (localSettings.loreCount > 0) 
 
-        document.getElementById("splash-up").innerHTML = cleanText(input.key.up)[0]
-        document.getElementById("splash-down").innerHTML = cleanText(input.key.down)[0]
-        document.getElementById("splash-left").innerHTML = cleanText(input.key.left)[0]
-        document.getElementById("splash-right").innerHTML = cleanText(input.key.right)[0]
-        document.getElementById("splash-next-gun").innerHTML = cleanText(input.key.nextGun)[0]
-        document.getElementById("splash-previous-gun").innerHTML = cleanText(input.key.previousGun)[0]
+        // document.getElementById("splash-up").innerHTML = cleanText(input.key.up)[0]
+        // document.getElementById("splash-down").innerHTML = cleanText(input.key.down)[0]
+        // document.getElementById("splash-left").innerHTML = cleanText(input.key.left)[0]
+        // document.getElementById("splash-right").innerHTML = cleanText(input.key.right)[0]
+        // document.getElementById("splash-next-gun").innerHTML = cleanText(input.key.nextGun)[0]
+        // document.getElementById("splash-previous-gun").innerHTML = cleanText(input.key.previousGun)[0]
 
         localSettings.key = input.key
         localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
@@ -1256,41 +1256,41 @@ document.getElementById("updates").addEventListener("toggle", function() {
         }
     );
 })
-const sound = {
-    tone(frequency, end = 1000, gain = 0.05) {
-        const audioCtx = new(window.AudioContext || window.webkitAudioContext)(); //setup audio context
-        const oscillator = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        gainNode.gain.value = gain; //controls volume
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        oscillator.type = "sine"; // 'sine' 'square', 'sawtooth', 'triangle' and 'custom'
-        oscillator.frequency.value = frequency; // value in hertz
-        oscillator.start();
-        setTimeout(() => {
-            audioCtx.suspend()
-            audioCtx.close()
-        }, end)
-        // return audioCtx
-    },
-    portamento(frequency, end = 1000, shiftRate = 10, gain = 0.05) {
-        const audioCtx = new(window.AudioContext || window.webkitAudioContext)(); //setup audio context
-        const oscillator = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        gainNode.gain.value = gain; //controls volume
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        oscillator.type = "sine"; // 'sine' 'square', 'sawtooth', 'triangle' and 'custom'
-        oscillator.frequency.value = frequency; // value in hertz
-        oscillator.start();
-        for (let i = 0, len = end * 0.1; i < len; i++) oscillator.frequency.setValueAtTime(frequency + i * shiftRate, audioCtx.currentTime + i * 0.01);
-        setTimeout(() => {
-            audioCtx.suspend()
-            audioCtx.close()
-        }, end)
-        // return audioCtx
-    }
-}
+// const sound = {
+    // tone(frequency, end = 1000, gain = 0.05) {
+        // const audioCtx = new(window.AudioContext || window.webkitAudioContext)(); //setup audio context
+        // const oscillator = audioCtx.createOscillator();
+        // const gainNode = audioCtx.createGain();
+        // gainNode.gain.value = gain; //controls volume
+        // oscillator.connect(gainNode);
+        // gainNode.connect(audioCtx.destination);
+        // oscillator.type = "sine"; // 'sine' 'square', 'sawtooth', 'triangle' and 'custom'
+        // oscillator.frequency.value = frequency; // value in hertz
+        // oscillator.start();
+        // setTimeout(() => {
+            // audioCtx.suspend()
+            // audioCtx.close()
+        // }, end)
+        // // return audioCtx
+    // },
+    // portamento(frequency, end = 1000, shiftRate = 10, gain = 0.05) {
+        // const audioCtx = new(window.AudioContext || window.webkitAudioContext)(); //setup audio context
+        // const oscillator = audioCtx.createOscillator();
+        // const gainNode = audioCtx.createGain();
+        // gainNode.gain.value = gain; //controls volume
+        // oscillator.connect(gainNode);
+        // gainNode.connect(audioCtx.destination);
+        // oscillator.type = "sine"; // 'sine' 'square', 'sawtooth', 'triangle' and 'custom'
+        // oscillator.frequency.value = frequency; // value in hertz
+        // oscillator.start();
+        // for (let i = 0, len = end * 0.1; i < len; i++) oscillator.frequency.setValueAtTime(frequency + i * shiftRate, audioCtx.currentTime + i * 0.01);
+        // setTimeout(() => {
+            // audioCtx.suspend()
+            // audioCtx.close()
+        // }, end)
+        // // return audioCtx
+    // }
+// }
 //**********************************************************************
 // main loop 
 //**********************************************************************
@@ -1331,5 +1331,5 @@ function checkIfOnTitlePage() {
 	}
 	requestAnimationFrame(checkIfOnTitlePage)
 }
-checkIfOnTitlePage()
+// checkIfOnTitlePage()
 // simulation.introPlayer()
