@@ -9,6 +9,12 @@ body {
     /* background-color: #eee; */
     user-select: none;
     cursor: auto;
+	animation-delay: 1s;
+	background: #70c4c6;
+	animation-name: daylight;
+	animation-duration: 60s;
+	animation-iteration-count: infinite;
+	animation-timing-function: ease-in-out;
 }
 
 canvas {
@@ -1097,3 +1103,12 @@ summary {
     right: 10px;
     z-index: 3;
 } */
+
+@keyframes daylight {
+	0% {  background-color: #5c54a4; }
+	15% {  background-color: #E67451; }
+	20% { background-color: skyblue; }
+	80% { background-color: skyblue; }
+	85% {  background-color: #E67451; }
+	100% {  background-color: #5c54a4;}
+}
