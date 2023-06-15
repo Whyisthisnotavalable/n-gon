@@ -176,10 +176,10 @@ const tech = {
                     tech.tech[i].count = 0;
                 }
             }
-            console.log('cheating')
-            sound.tone(250)
-            sound.tone(300)
-            sound.tone(375)
+            // console.log('cheating')
+            // sound.tone(250)
+            // sound.tone(300)
+            // sound.tone(375)
         }
     },
     haveGunCheck(name, needActive = true) {
