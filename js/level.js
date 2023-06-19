@@ -1205,7 +1205,53 @@ const level = {
 		let floor = [];
 		let trees = [];
 		let lake = [];
+        const clouds = [];
 		color.map = "black";
+        class Cloud {
+            constructor(x, y, width, height, speed, direction, color) {
+              this.x = x;
+              this.y = y;
+              this.width = width;
+              this.height = height;
+              this.speed = speed;
+              this.direction = direction;
+              this.color = color;
+            }
+          
+            update() {
+              if (this.direction === 'left') {
+                this.x -= this.speed;
+              } else {
+                this.x += this.speed;
+              }
+          
+              if (this.direction === 'left' && this.x + this.width < 0) {
+                this.x = canvas.width;
+              } else if (this.direction === 'right' && this.x > canvas.width) {
+                this.x = -this.width;
+              }
+            }
+          
+            draw(ctx) {
+              ctx.fillStyle = this.color;
+              ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+        }
+        function createCloud(x, y, width, height, speed, direction, color) {
+            const cloud = new Cloud(x, y, width, height, speed, direction, color);
+            clouds.push(cloud);
+        }
+        function updateClouds() {
+            clouds.forEach(cloud => {
+            cloud.update();
+            cloud.draw(ctx);
+            });
+        }
+        // Example usage
+        // createCloud(100, 100, 150, 80, 1, 'left', '#ffffff');
+        // createCloud(400, 200, 120, 60, 0.5, 'right', '#ffffff');
+        // createCloud(200, 300, 180, 90, 1.5, 'left', '#ffffff');
+
 		function Raindrop() {
 		  this.y = player.position.y + Math.random() * -5000 - Math.random() * 5000;
 		  this.x = player.position.x + Math.random() * 5000 - Math.random() * 5000;
@@ -1510,6 +1556,8 @@ const level = {
 				// drawRaindrop(drop);
 				// updateRaindrop(drop);
 			// }
+            createCloud(100, 100, 150, 80, 1, 'left', '#ffffff');
+            updateClouds()
 			for(let i = 0; i < lake.length; i++) {
 				lake[i].query()
 			}
