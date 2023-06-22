@@ -1205,7 +1205,9 @@ const level = {
 		let floor = [];
 		let trees = [];
 		let lake = [];
-        const clouds = [];
+        let clouds = [];
+        let randomPoints = [];
+        let randomPoints2 = []
 		color.map = "black";
         class Cloud {
             constructor(x, y, width, height, speed, direction, color) {
@@ -1225,14 +1227,14 @@ const level = {
                 this.x += this.speed;
               }
           
-              if (this.direction === 'left' && this.x + this.width < 0) {
-                this.x = canvas.width;
-              } else if (this.direction === 'right' && this.x > canvas.width) {
-                this.x = -this.width;
+              if (this.direction === 'left' && this.x + this.width < map[0].position.x) {
+                this.x = map[Math.floor(Math.random() * (map.length - 1))].position.x;
+              } else if (this.direction === 'right' && this.x + this.width > map[map.length - 1].position.x) {
+                this.x = map[Math.floor(Math.random() * (map.length - 1))].position.x;
               }
             }
           
-            draw(ctx) {
+            draw() {
               ctx.fillStyle = this.color;
               ctx.fillRect(this.x, this.y, this.width, this.height);
             }
@@ -1242,16 +1244,11 @@ const level = {
             clouds.push(cloud);
         }
         function updateClouds() {
-            clouds.forEach(cloud => {
-            cloud.update();
-            cloud.draw(ctx);
-            });
+            for(let i = 0; i < clouds.length; i++) {
+                clouds[i].update();
+                clouds[i].draw();
+            }
         }
-        // Example usage
-        // createCloud(100, 100, 150, 80, 1, 'left', '#ffffff');
-        // createCloud(400, 200, 120, 60, 0.5, 'right', '#ffffff');
-        // createCloud(200, 300, 180, 90, 1.5, 'left', '#ffffff');
-
 		function Raindrop() {
 		  this.y = player.position.y + Math.random() * -5000 - Math.random() * 5000;
 		  this.x = player.position.x + Math.random() * 5000 - Math.random() * 5000;
@@ -1341,24 +1338,29 @@ const level = {
 		  map = []
 		  floor = []
 		  lake = []
+          randomPoints = []
+          randomPoints2 = []
 		  const playerX = player.position.x;
 		  const history = m.history[(m.cycle - 30 * i) % 600]
 		  
 		  // Check if player has moved right
 		  if (playerX > history.position.x) {
 			for(let i = -7500; i < 7500; i += 100) {
-				let leftRectY = round(perlin.get(Math.cos(round(playerX + i, 100) / 3000), Math.sin(round(playerX + i, 100) / 3000)) * -2500);
+				let leftRectY = round(-2500 * perlin.get(round(i + playerX, 100)/3000, 0))
 				let leftRect = { x: round(playerX + 100, 100) + i, y: leftRectY, width: 100 + 2, height: 6000};
 				floor.push(leftRect)
+                randomPoints.push(300 + round(-1000 * perlin.get(round(i + playerX, 100)/1000, 0)))
+                randomPoints2.push(50 + round(-1000 * perlin.get(round(i + playerX, 100)/2000, 0)))
 			}
 		  }
 		  // Check if player has moved left
 		  if (playerX < history.position.x) {
 			for(let i = -7500; i < 7500; i += 100) {
-				let rightRectY = round(perlin.get(Math.cos(round(playerX + i - 100, 100) / 3000), Math.sin(round(playerX + i - 100, 100) / 3000)) * -2500);
+				let rightRectY = round(-2500 * perlin.get(round(i + playerX - 100, 100)/3000, 0))
 				let rightRect = {x: round(playerX, 100) + i, y: rightRectY, width: 100 + 2, height: 6000};
 				floor.push(rightRect)
-				
+				randomPoints.push(300 + round(-1000 * perlin.get(round(i + playerX - 100, 100)/1000, 0)))
+				randomPoints2.push(50 + round(-1000 * perlin.get(round(i + playerX - 100, 100)/2000, 0)))
 			}
 		  }
 		  // Spawn the map rects
@@ -1372,28 +1374,32 @@ const level = {
 					lake.push(level.water(map[i].vertices[0].x, seaLevel + 1, 100, Math.abs(map[i].vertices[0].y - 75)))
 				}
 			}
-			// for(let i = 0; i < trees.length - 1; i++) {
-				// if(Matter.Query.ray(map, {x: trees[i].x + 50, y: 1000}, {x:trees[i].x + 50, y: trees[i].y}).length === 0) {
-					// trees.splice(i, 1)
-				// }
-			// }
-			// for(let i = trees.length; i < map.length; i++) {
-				// if(trees.length < 30 && Math.random() < 0.008) { //8% spawn rate for trees
-					// trees.push({x: map[i].vertices[0].x, y: map[i].vertices[0].y - 400})
-				// }
-			// }
+			for(let i = 0; i < trees.length - 1; i++) {
+				if(Matter.Query.ray(map, {x: trees[i].x + 50, y: 1000}, {x:trees[i].x + 50, y: trees[i].y}).length === 0) {
+					trees.splice(i, 1)
+				}
+			}
+			for(let i = trees.length; i < map.length; i++) {
+				if(trees.length < 30 && Math.random() < 0.008) { //8% spawn rate for trees
+					trees.push({x: map[i].vertices[0].x, y: map[i].vertices[0].y - 400})
+				}
+			}
 			for(let i = 0; i < oldMap.length; i++) {
 				spawn.mapRectNow(oldMap[i].vertices[0].x, oldMap[i].vertices[0].y, Math.abs(Math.abs(oldMap[i].vertices[1].x) - Math.abs(oldMap[i].vertices[0].x)), Math.abs(Math.abs(oldMap[i].vertices[3].y) - Math.abs(oldMap[i].vertices[0].y)))
 			}
+            for(let i = 0; i < map.length; i++) {
+                if(Math.random() < 0.002) {
+                    spawn.hopper(map[i].position.x, map[i].vertices[0].y)
+                }
+            }
 		}
-		
 		let mapLength = 0;
         level.custom = () => {
-			// for(let i = 0; i < trees.length; i++) {
-				// if(trees[i].y + 400 < 75) {
-					// drawTree(trees[i].x, trees[i].y, 100, 400);
-				// }
-			// }
+			for(let i = 0; i < trees.length; i++) {
+				if(trees[i].y + 400 < 75) {
+					drawTree(trees[i].x, trees[i].y, 100, 400);
+				}
+			}
 			if (m.pos.x > 0.55 * 100 + mapLength * 100) {
                 mapLength++
                 generateTerrain()
@@ -1403,10 +1409,27 @@ const level = {
                 generateTerrain()
 				simulation.minimapcount -= 100
             }
+            if(map.length == 0) {
+                Matter.Body.setPosition(player, { x: 0, y: -150})
+                for(let i = -7500; i < 7500; i += 100) {
+                    floor.push({x: i - 1, y: round(-2500 * perlin.get(i / 3000, 0)), width: 100 + 2, height: 6000})
+                    // spawn.mapRect(i, round(Math.min(150 * Math.sin(i) * Math.random(), 200 * Math.cos(i) * Math.random()), 25), 100, 3000)
+                }
+                for(let i = 0; i < floor.length; i++) {
+                    spawn.mapRectNow(floor[i].x + 100, floor[i].y, floor[i].width, floor[i].height)
+                }
+                for(let i = floor.length - 1; i > 0; i--) {
+                    if(map[i].vertices[0].y > seaLevel) {
+                        lake.push(level.water(map[i].vertices[0].x, seaLevel + 1, 100, Math.abs(map[i].vertices[0].y - 75)))
+                    }
+                }
+            }
 		};
 
 		for(let i = -7500; i < 7500; i += 100) {
-			floor.push({x: i - 1, y: round(perlin.get(Math.cos(i / 3000), Math.sin(i / 3000)) * -2500), width: 100 + 2, height: 6000})
+			floor.push({x: i - 1, y: round(-2500 * perlin.get(i / 3000, 0)), width: 100 + 2, height: 6000})
+            randomPoints.push(300 + round(-1000 * perlin.get(i / 1000, 0)))
+            randomPoints2.push(50 + round(-1000 * perlin.get(i / 2000, 0)))
 			// spawn.mapRect(i, round(Math.min(150 * Math.sin(i) * Math.random(), 200 * Math.cos(i) * Math.random()), 25), 100, 3000)
 		}
 		for(let i = 0; i < floor.length; i++) {
@@ -1417,16 +1440,16 @@ const level = {
 				lake.push(level.water(map[i].vertices[0].x, seaLevel + 1, 100, Math.abs(map[i].vertices[0].y - 75)))
 			}
 		}
-		// for(let i = trees.length; i < map.length; i++) {
-			// if(trees.length < 30 && Math.random() < 0.008) { //8% spawn rate for trees
-				// trees.push({x: map[i].vertices[0].x, y: map[i].vertices[0].y - 400})
-			// }
-		// }
-		// for(let i = 0; i < map.length; i++) {
-			// if(Math.random() < 0.2) {
-				// spawn.hopper(map[i].position.x, map[i].vertices[0].y)
-			// }
-		// }
+		for(let i = trees.length; i < map.length; i++) {
+			if(trees.length < 30 && Math.random() < 0.008) { //8% spawn rate for trees
+				trees.push({x: map[i].vertices[0].x, y: map[i].vertices[0].y - 400})
+			}
+		}
+		for(let i = 0; i < map.length; i++) {
+			if(Math.random() < 0.002 && mob.length < 20) {
+				spawn.hopper(map[i].position.x, map[i].vertices[0].y)
+			}
+		}
         level.setPosToSpawn(0, -150); //normal spawn
         level.defaultZoom = 3000
         simulation.zoomTransition(level.defaultZoom)
@@ -1487,8 +1510,8 @@ const level = {
 			}
 			for(let i = map.length - 1; i > 0; i--) {
 				if(map[i].area == 612000) {
-					ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y + 300)
-					ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y + 300)
+					ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y + 300 + randomPoints[i])
+					ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y + 300 + randomPoints[i])
 				}
 			}
 			ctx.strokeStyle = "lightgray";
@@ -1501,14 +1524,14 @@ const level = {
 			ctx.lineTo(map[0].vertices[3].x, map[0].vertices[3].y + 300)
 			for(let i = 0; i < map.length; i++) {
 				if(map[i].area == 612000) {
-					ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y + 300)
-					ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y + 300)
+					ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y + 300 + randomPoints[i])
+					ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y + 300 + randomPoints[i])
 				}
 			}
 			for(let i = map.length - 1; i > 0; i--) {
 				if(map[i].area == 612000) {
-					ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y + 500)
-					ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y + 500)
+					ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y + 500 + randomPoints[i] + randomPoints2[i])
+					ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y + 500 + randomPoints[i] + randomPoints2[i])
 				}
 			}
 			ctx.strokeStyle = "darkgray";
@@ -1521,8 +1544,8 @@ const level = {
 			ctx.lineTo(map[0].vertices[3].x, map[0].vertices[3].y)
 			for(let i = 0; i < map.length; i++) {
 				if(map[i].area == 612000) {
-					ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y + 500)
-					ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y + 500)
+					ctx.lineTo(map[i].vertices[0].x, map[i].vertices[0].y + 500 + randomPoints[i] + randomPoints2[i])
+					ctx.lineTo(map[i].vertices[1].x, map[i].vertices[1].y + 500 + randomPoints[i] + randomPoints2[i])
 				}
 			}
 			for(let i = map.length - 1; i > 0; i--) {
@@ -1556,7 +1579,9 @@ const level = {
 				// drawRaindrop(drop);
 				// updateRaindrop(drop);
 			// }
-            createCloud(100, 100, 150, 80, 1, 'left', '#ffffff');
+            if(clouds.length < Math.floor(15 * Math.random())) {
+                createCloud(player.position.x + Math.random() * 5000 - Math.random() * 5000, player.position.y - (Math.random() * 3000 + 3000), Math.floor(1500 * Math.random() + 500), Math.floor(800 * Math.random() + 300), Math.ceil(15 * Math.random()), Math.random() > 0.5 ? 'left' : 'right', '#ffffff66');
+            }
             updateClouds()
 			for(let i = 0; i < lake.length; i++) {
 				lake[i].query()
